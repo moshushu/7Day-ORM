@@ -2,19 +2,26 @@ package session
 
 import (
 	"database/sql"
-	"gee-orm/log"
+	"geeorm/dialect"
+	"geeorm/log"
+	"geeorm/schema"
 	"strings"
 )
 
 // 核心结构 Session，用于实现与数据库的交互
 type Session struct {
-	db      *sql.DB
-	sql     strings.Builder // SQL语句
-	sqlVars []interface{}   // SQL语句中占位符
+	db       *sql.DB
+	dialect  dialect.Dialect
+	refTable *schema.Schema
+	sql      strings.Builder // SQL语句
+	sqlVars  []interface{}   // SQL语句中占位符
 }
 
-func New(db *sql.DB) *Session {
-	return &Session{db: db}
+func New(db *sql.DB, dialect dialect.Dialect) *Session {
+	return &Session{
+		db:      db,
+		dialect: dialect,
+	}
 }
 
 func (s *Session) Clear() {
@@ -26,7 +33,7 @@ func (s *Session) DB() *sql.DB {
 	return s.db
 }
 
-// Raw充当的是什么角色
+// Raw充当的是什么角色？？？？？？
 func (s *Session) Raw(sql string, values ...interface{}) *Session {
 	s.sql.WriteString(sql)
 	s.sql.WriteString(" ")

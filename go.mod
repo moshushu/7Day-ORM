@@ -1,4 +1,4 @@
-module gee-orm
+module geeorm
 
 go 1.19
 
