@@ -40,5 +40,5 @@ func (s *postgres) DataTypeOf(typ reflect.Value) string {
 
 func (s *postgres) TableExistSQL(tableName string) (string, []interface{}) {
 	args := []interface{}{tableName}
-	return "SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_name = $", args
+	return "SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_name = $1", args
 }
