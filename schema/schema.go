@@ -1,9 +1,11 @@
 package schema
 
 import (
+	"bytes"
 	"geeorm/dialect"
 	"go/ast"
 	"reflect"
+	"unicode"
 )
 
 type Field struct {
@@ -29,7 +31,7 @@ func Parse(dest interface{}, d dialect.Dialect) *Schema {
 	modelType := reflect.Indirect(reflect.ValueOf(dest)).Type()
 	schema := &Schema{
 		Model:    dest,
-		Name:     modelType.Name(),
+		Name:     toSnakeCase(modelType.Name()),
 		fieldMap: make(map[string]*Field),
 	}
 
@@ -37,16 +39,31 @@ func Parse(dest interface{}, d dialect.Dialect) *Schema {
 		p := modelType.Field(i)
 		if !p.Anonymous && ast.IsExported(p.Name) {
 			field := &Field{
-				Name: p.Name,
+				Name: toSnakeCase(p.Name),
 				Type: d.DataTypeOf(reflect.Indirect(reflect.New(p.Type))),
 			}
 			if v, ok := p.Tag.Lookup("geeorm"); ok {
 				field.Tag = v
 			}
 			schema.Fields = append(schema.Fields, field)
-			schema.FieldNames = append(schema.FieldNames, p.Name)
+			schema.FieldNames = append(schema.FieldNames, toSnakeCase(p.Name))
 			schema.fieldMap[p.Name] = field
 		}
 	}
 	return schema
+}
+
+func toSnakeCase(input string) string {
+	var res bytes.Buffer
+	for i, r := range input {
+		if unicode.IsUpper(r) {
+			if i > 0 {
+				res.WriteRune('_')
+			}
+			res.WriteRune(unicode.ToLower(r))
+		} else {
+			res.WriteRune(r)
+		}
+	}
+	return res.String()
 }

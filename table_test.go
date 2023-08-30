@@ -7,8 +7,9 @@ import (
 )
 
 type Users struct {
-	Name string `geeorm:"PRIMARY KEY"`
-	Age  int
+	Name    string `geeorm:"PRIMARY KEY"`
+	Age     int
+	NameAge string
 }
 
 func TestSession_CreateTable(t *testing.T) {
