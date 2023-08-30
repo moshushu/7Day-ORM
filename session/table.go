@@ -43,12 +43,7 @@ func (s *Session) DropTable() error {
 func (s *Session) HasTable() bool {
 	sql, values := s.dialect.TableExistSQL(s.RefTable().Name)
 	row := s.Raw(sql, values...).QueryRow()
-	fmt.Println("sql", sql)
-	fmt.Println("values", values)
 	var tmp string
-	err := row.Scan(&tmp)
-	fmt.Println("tmp", tmp)
-	fmt.Println("s.reftable.name", s.RefTable().Name)
-	log.Error(err)
+	_ = row.Scan(&tmp)
 	return tmp == s.RefTable().Name
 }
